@@ -3,12 +3,22 @@ import express from "express";
 import * as cheerio from "cheerio";
 import { Client, GatewayIntentBits } from "discord.js";
 import cron from "node-cron";
+import puppeteer from "puppeteer";
 
 const baseUrl = "https://freetp.org/";
-const BOT_TOKEN = process.env.BOT_TOKEN;
-const CHANNEL_ID = process.env.CHANNEL_ID;
+const BOT_TOKEN =
+  "ODY1OTAwNTI3Nzk1MzA2NTA3.G5s_mv.zvK-DJy98riISXilDjhjCM9zshBR8lNnJ5jsEc";
+const CHANNEL_ID = "1336489939864522782";
 
 const app = express();
+
+async function launchBrowser() {
+  const browser = await puppeteer.launch({
+    headless: true,
+    args: ["--no-sandbox", "--disable-setuid-sandbox"],
+  });
+  return browser;
+}
 
 const client = new Client({
   intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages],
@@ -16,8 +26,14 @@ const client = new Client({
 
 async function parseCoopGames() {
   try {
-    const response = await axios.get(baseUrl);
-    const $ = cheerio.load(response.data);
+    const browser = await launchBrowser();
+    const page = await browser.newPage();
+
+    await page.goto(baseUrl);
+
+    const html = await page.content();
+
+    const $ = cheerio.load(html);
     const gameLinks = [];
 
     // Парсим ссылки на игры
@@ -86,18 +102,16 @@ async function sendToDiscord(games) {
 }
 
 // Основная функция с планировщиком
-function main() {
+async function main() {
   // Запускаем задачу каждые 60 минут
-  cron.schedule("0 * * * *", async () => {
-    console.log("Запуск парсинга...");
-    const games = await parseCoopGames();
-    if (games.length > 0) {
-      console.log(`Найдено игр: ${games.length}`);
-      await sendToDiscord(games);
-    } else {
-      console.log("Новые кооперативные игры не найдены.");
-    }
-  });
+  console.log("Запуск парсинга...");
+  const games = await parseCoopGames();
+  if (games.length > 0) {
+    console.log(`Найдено игр: ${games.length}`);
+    await sendToDiscord(games);
+  } else {
+    console.log("Новые кооперативные игры не найдены.");
+  }
 }
 
 // Слушаем 8000 порт

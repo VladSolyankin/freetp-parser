@@ -7,6 +7,9 @@ COPY package*.json ./
 # Устанавливаем зависимости
 RUN npm install
 
+# установка chrome для puppeteer
+RUN npx puppeteer browsers install chrome
+
 # Копируем ВСЕ файлы из текущей директории (корня проекта) в корень контейнера
 COPY . .
 
