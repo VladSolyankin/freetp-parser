@@ -1,20 +1,30 @@
 # Используем официальный образ Node.js
 FROM node:16
 
+# Установка зависимостей для Puppeteer
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+    libnss3 \
+    libatk1.0-0 \
+    libatk-bridge2.0-0 \
+    libxkbfile1 \
+    libsecret-1-0 \
+    libxss1 \
+    libappindicator3-1 \
+    libasound2 \
+    libgbm1 \
+    fonts-liberation \
+    && rm -rf /var/lib/apt/lists/*
+
+# Устанавливаем Puppeteer и его зависимости
+RUN npm install puppeteer
 
 # Копируем package.json и package-lock.json (если есть)
 COPY package*.json ./
 
-# Устанавливаем зависимости
+# Устанавливаем зависимости проекта
 RUN npm install
 
-# установка chrome для puppeteer
-RUN npx puppeteer browsers install chrome && npx puppeteer install
-
-# Установка зависимостей
-RUN apt-get update && \
-    apt-get install -yq libatk1.0-0
-    
 # Копируем ВСЕ файлы из текущей директории (корня проекта) в корень контейнера
 COPY . .
 
