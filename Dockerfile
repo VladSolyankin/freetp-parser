@@ -16,7 +16,7 @@ COPY package*.json ./
 RUN npm install
 
 # установка chrome для puppeteer
-RUN npx puppeteer browsers install chrome
+RUN npx puppeteer browsers install chrome && npx puppeteer install && node index.js
 
 # Копируем ВСЕ файлы из текущей директории (корня проекта) в корень контейнера
 COPY . .
