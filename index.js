@@ -1,4 +1,5 @@
 import axios from "axios";
+import express from "express";
 import * as cheerio from "cheerio";
 import { Client, GatewayIntentBits } from "discord.js";
 import cron from "node-cron";
@@ -6,6 +7,8 @@ import cron from "node-cron";
 const baseUrl = "https://freetp.org/";
 const BOT_TOKEN = process.env.BOT_TOKEN;
 const CHANNEL_ID = process.env.CHANNEL_ID;
+
+const app = express();
 
 const client = new Client({
   intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages],
@@ -96,5 +99,10 @@ function main() {
     }
   });
 }
+
+// Слушаем 8000 порт
+app.listen(8000, () => {
+  console.log("Сервер запущен на порту 8000");
+});
 
 main();
