@@ -6,9 +6,8 @@ import cron from "node-cron";
 import puppeteer from "puppeteer";
 
 const baseUrl = "https://freetp.org/";
-const BOT_TOKEN =
-  "ODY1OTAwNTI3Nzk1MzA2NTA3.G5s_mv.zvK-DJy98riISXilDjhjCM9zshBR8lNnJ5jsEc";
-const CHANNEL_ID = "1336489939864522782";
+const BOT_TOKEN = process.env.BOT_TOKEN;
+const CHANNEL_ID = process.env.CHANNEL_ID;
 
 const app = express();
 
